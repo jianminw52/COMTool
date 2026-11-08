@@ -10,6 +10,8 @@ English | [中文](./README_ZH.MD)
 
 A cross platform serial debug tools written by python
 
+现场 Host 的运行、CLI 和尚未实现的部分见 [HOST.md](./HOST.md)。
+
 --------
 
 | Windows | Linux | Raspberry Pi | macOS |
