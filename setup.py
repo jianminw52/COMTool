@@ -130,6 +130,7 @@ setup(
     entry_points={
         'console_scripts': [
             'comtool-i18n=COMTool.i18n:cli_main',
+            'comtool-host=COMTool.host_main:main',
         ],
         'gui_scripts': [
             'comtool=COMTool.Main:main',
