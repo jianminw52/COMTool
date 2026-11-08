@@ -1,0 +1,30 @@
+name: rdh-tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - cursor/rdh-v2-architecture-50d2
+
+jobs:
+  pytest:
+    name: rdh pytest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.12"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-rdh.txt pytest
+      - name: test
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: python -m pytest tests/test_rdh_domain.py tests/test_rdh_control.py tests/test_rdh_adapters.py tests/test_rdh_boundary.py tests/test_rdh_window.py tests/test_rdh_cli_e2e.py -q
