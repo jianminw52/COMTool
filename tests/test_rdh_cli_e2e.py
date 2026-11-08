@@ -65,9 +65,12 @@ def _wait_snap(control, pred, timeout=2):
     raise AssertionError(control.local_snapshot())
 
 
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+
 def _cli(port, *args, username="eng", password="eng-pw", timeout=8):
     env = os.environ.copy()
-    env["PYTHONPATH"] = "/workspace"
+    env["PYTHONPATH"] = _ROOT + os.pathsep + env.get("PYTHONPATH", "")
     env["RDH_PASSWORD"] = password
     return subprocess.run(
         [
@@ -88,7 +91,7 @@ def _cli(port, *args, username="eng", password="eng-pw", timeout=8):
             "3",
             *args,
         ],
-        cwd="/workspace",
+        cwd=_ROOT,
         env=env,
         capture_output=True,
         text=True,
@@ -147,6 +150,7 @@ def test_cli_host_approval_over_pty_and_loopback():
         assert session
         approver = threading.Thread(target=_approve, args=(control,), daemon=True)
         approver.start()
+        expires = _expires()
         done = _cli(
             broker.port,
             "operation",
@@ -160,7 +164,7 @@ def test_cli_host_approval_over_pty_and_loopback():
             "--target-session",
             session,
             "--expires-at",
-            _expires(),
+            expires,
         )
         approver.join(4)
         assert done.returncode == 0, (done.returncode, done.stdout, done.stderr)
@@ -191,7 +195,7 @@ def test_cli_host_approval_over_pty_and_loopback():
             "--target-session",
             session,
             "--expires-at",
-            _expires(),
+            expires,
         )
         assert replay.returncode == 0, replay.stderr
         try:
@@ -212,7 +216,7 @@ def test_cli_host_approval_over_pty_and_loopback():
             "--target-session",
             session,
             "--expires-at",
-            _expires(),
+            expires,
         )
         assert conflict.returncode == 4, conflict.stdout
         queried = _cli(broker.port, "operation", "query", "--operation-id", "op-pty")
