@@ -44,6 +44,13 @@ def test_ui_does_not_touch_the_device_or_the_wire():
         assert hits == [], (path, hits)
 
 
+def test_remote_and_cli_do_not_own_the_device():
+    for folder in ("remote", "cli"):
+        for path in (ROOT / folder).glob("*.py"):
+            hits = _forbidden(_imports(path), ("PyQt5", "serial", "rdh.adapters", "rdh.ui", "rdh.app"))
+            assert hits == [], (path, hits)
+
+
 def test_adapters_do_not_import_qt_or_the_control_owner():
     for path in (ROOT / "adapters").glob("*.py"):
         modules = _imports(path)

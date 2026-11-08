@@ -11,9 +11,10 @@ from rdh.adapters.fake_device import FakeDevice
 from rdh.adapters.journal import FileJournal
 from rdh.adapters.logs import LogFileSink
 from rdh.adapters.serial_device import SerialDevice
+from rdh.adapters.credentials import UnavailableSecrets
 from rdh.adapters.settings import SettingsError, load_settings
 from rdh.app.control import Control
-from rdh.domain.model import SYSTEM_PRINCIPAL, SetRelay
+from rdh.remote.service import start_remote
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -41,8 +42,7 @@ def main(argv: list[str] | None = None) -> int:
         clock_trust="unverified_local",
     )
     control.add_log_sink(logs)
-    # Remote transport is intentionally off until a qualified mode is selected.
-    control.submit(SetRelay("disabled", ""), SYSTEM_PRINCIPAL)
+    adapter = start_remote(control, settings, UnavailableSecrets())
     from PyQt5.QtWidgets import QApplication
 
     from rdh.ui.window import StationWindow
@@ -51,6 +51,8 @@ def main(argv: list[str] | None = None) -> int:
     window = StationWindow(control)
     window.show()
     app.exec_()
+    if adapter is not None:
+        adapter.stop()
     logs.shutdown(1.0)
     journal.close()
     report = window.last_shutdown
