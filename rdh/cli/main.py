@@ -21,7 +21,19 @@ from rdh.remote.codec import encode_body, event_topic, request_topic, response_t
 from rdh.remote.mqtt import MqttClient, MqttError
 
 
+def _utf8_stdio() -> None:
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="replace")
+        except (OSError, ValueError):
+            pass
+
+
 def main(argv: list[str] | None = None) -> int:
+    _utf8_stdio()
     argv = list(sys.argv[1:] if argv is None else argv)
     if "--password" in argv:
         print("密码只能从 --password-env 指定的环境变量读取。", file=sys.stderr)

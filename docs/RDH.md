@@ -59,7 +59,7 @@ python -m rdh --simulate
 
 ## 启动 CLI
 
-工程师和 bot 都用 `python -m rdh.cli`。密码来自环境变量。
+工程师和 bot 都用 `python -m rdh.cli`。密码来自环境变量。标准输出和标准错误使用 UTF-8。
 
 ```bash
 export RDH_PASSWORD='临时口令'

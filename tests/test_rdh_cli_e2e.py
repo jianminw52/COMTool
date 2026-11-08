@@ -71,6 +71,8 @@ _ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 def _cli(port, *args, username="eng", password="eng-pw", timeout=8):
     env = os.environ.copy()
     env["PYTHONPATH"] = _ROOT + os.pathsep + env.get("PYTHONPATH", "")
+    env["PYTHONIOENCODING"] = "utf-8"
+    env["PYTHONUTF8"] = "1"
     env["RDH_PASSWORD"] = password
     return subprocess.run(
         [
@@ -95,6 +97,8 @@ def _cli(port, *args, username="eng", password="eng-pw", timeout=8):
         env=env,
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         timeout=timeout,
         check=False,
     )
